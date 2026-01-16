@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Scene, SeoData, Language } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 const getSystemInstruction = (lang: Language) => `You are a world-class Virtual Action Movie Director and Veo 3 Prompt Engineer. 
 Your specialty is the "BeamNG.Drive" style (Jota Drive channel) characterized by:
