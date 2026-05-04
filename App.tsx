@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Scene, ScriptState, SeoData, Language } from './types';
-import { generateScenesBatch, generateSeoAssets, generateImage } from './services/geminiService';
+import { generateScenesBatch, generateSeoAssets, generateImage, generateSuggestions } from './services/geminiService';
 
 const translations = {
   en: {
@@ -37,6 +37,8 @@ const translations = {
     recommended_desc: "Select a suggested topic to instantly start a new BeamNG-style script production:",
     copied_alert: "Copied to clipboard!",
     sound_prefix: "Sound:",
+    load_more_suggestions: "Load More Suggestions",
+    loading_suggestions: "Loading suggestions...",
     veo_prompt_title: "Veo 3 Prompt",
     quota_error_title: "Quota Exceeded (Rate Limit)",
     quota_error_desc: "You have reached the maximum allowed requests for your current plan. Please wait about 60 seconds before trying again, or upgrade to a paid project."
@@ -74,9 +76,89 @@ const translations = {
     recommended_desc: "Chọn một chủ đề gợi ý để bắt đầu sản xuất kịch bản BeamNG mới ngay lập tức:",
     copied_alert: "Đã sao chép vào bộ nhớ tạm!",
     sound_prefix: "Âm thanh:",
+    load_more_suggestions: "Tải thêm gợi ý",
+    loading_suggestions: "Đang tải gợi ý...",
     veo_prompt_title: "Prompt Veo 3",
     quota_error_title: "Hết lượt sử dụng (Rate Limit)",
     quota_error_desc: "Bạn đã vượt quá giới hạn yêu cầu cho phép. Vui lòng đợi khoảng 60 giây rồi thử lại, hoặc nâng cấp lên gói trả phí."
+  },
+  ko: {
+    header_subtitle: "Veo 3를 위한 고충실도 물리 기반 영화 스크립트 제작. BeamNG.Drive 스타일의 혼돈 전문.",
+    theme_label: "프로젝트 테마",
+    theme_placeholder: "예: 극한의 경찰 추격 실패",
+    total_scenes_label: "총 장면 수",
+    start_btn: "프로덕션 시작",
+    director_loading: "감독 로딩 중...",
+    active_project: "현재 프로젝트",
+    status_label: "제작 상태",
+    init_engine: "엔진 초기화 중...",
+    init_engine_desc: "가상 감독이 물리 연산이 포함된 영화적 시퀀스를 제작하고 있습니다. 잠시만 기다려 주세요.",
+    writing_batch: "감독이 배치 작성 중",
+    production_progress: "제작 진행 중... 확인이 필요하지 않습니다",
+    script_ready: "전체 스크립트 준비 완료",
+    get_seo_btn: "SEO 가져오기",
+    download_json: "JSON 다운로드",
+    export_pdf: "PDF 내보내기",
+    new_story: "새로운 이야기",
+    seo_assets_title: "SEO 최적화 자산",
+    copy_seo: "모든 SEO 정보 복사",
+    title_label: "제목",
+    desc_label: "설명",
+    gen_thumb: "썸네일 생성",
+    choose_text: "썸네일 텍스트 선택",
+    create_viral_thumb: "바이럴 썸네일 생성",
+    rendering_masterpiece: "걸작 렌더링 중...",
+    save_png: "PNG 저장",
+    regenerate: "다시 생성",
+    recommended_themes: "권장 다음 테마",
+    copy_themes: "모든 테마 복사",
+    recommended_desc: "제안된 주제를 선택하여 즉시 새로운 BeamNG 스타일 스크립트 제작을 시작하세요:",
+    copied_alert: "클립보드에 복사되었습니다!",
+    sound_prefix: "소리:",
+    load_more_suggestions: "추가 제안 로드",
+    loading_suggestions: "제안 로드 중...",
+    veo_prompt_title: "Veo 3 프롬프트",
+    quota_error_title: "할당량 초과 (요율 제한)",
+    quota_error_desc: "현재 플랜에 허용된 최대 요청 수에 도달했습니다. 다시 시도하기 전에 약 60초 정도 기다리거나 유료 프로젝트로 업그레이드하세요."
+  },
+  es: {
+    header_subtitle: "Crea guiones cinematográficos de alta fidelidad basados en física para Veo 3. Especializados en el caos al estilo BeamNG.Drive.",
+    theme_label: "Tema del Proyecto",
+    theme_placeholder: "ej. Falla en persecución policial extrema",
+    total_scenes_label: "Escenas Totales",
+    start_btn: "Iniciar Producción",
+    director_loading: "Cargando Director...",
+    active_project: "Proyecto Activo",
+    status_label: "Estado de Producción",
+    init_engine: "Inicializando Motor...",
+    init_engine_desc: "El Director Virtual está creando sus secuencias cinematográficas de alta física. Por favor, espere.",
+    writing_batch: "Director escribiendo lote",
+    production_progress: "Producción en progreso... No se requiere confirmación",
+    script_ready: "Guion Completo Listo",
+    get_seo_btn: "Obtener SEO",
+    download_json: "Descargar JSON",
+    export_pdf: "Exportar PDF",
+    new_story: "Nueva Historia",
+    seo_assets_title: "Activos del Optimizador SEO",
+    copy_seo: "Copiar Toda la Información SEO" ,
+    title_label: "Título",
+    desc_label: "Descripción",
+    gen_thumb: "Generar Miniatura",
+    choose_text: "Elegir Texto de Miniatura",
+    create_viral_thumb: "Crear Miniatura Viral",
+    rendering_masterpiece: "Renderizando Obra Maestra...",
+    save_png: "Guardar PNG",
+    regenerate: "Regenerar",
+    recommended_themes: "Próximos Temas Recomendados",
+    copy_themes: "Copiar Todos los Temas",
+    recommended_desc: "Selecciona un tema sugerido para comenzar instantáneamente una nueva producción de guiones al estilo BeamNG:",
+    copied_alert: "¡Copiado al portapapeles!",
+    sound_prefix: "Sonido:",
+    load_more_suggestions: "Cargar más sugerencias",
+    loading_suggestions: "Cargando sugerencias...",
+    veo_prompt_title: "Prompt de Veo 3",
+    quota_error_title: "Cuota Excedida (Límite de Velocidad)",
+    quota_error_desc: "Ha alcanzado el máximo de solicitudes permitidas para su plan actual. Espere unos 60 segundos antes de intentar de nuevo o actualice a un proyecto de pago."
   }
 };
 
@@ -90,7 +172,7 @@ const App: React.FC = () => {
     isGeneratingSeo: false,
     seoData: null,
     error: null,
-    language: 'vi',
+    language: 'en',
     isGeneratingImage: false,
     thumbnailUrl: null,
     imageError: null,
@@ -98,6 +180,8 @@ const App: React.FC = () => {
 
   const [inputTitle, setInputTitle] = useState('');
   const [inputTotal, setInputTotal] = useState(38);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isGeneratingSuggestions, setIsGeneratingSuggestions] = useState(false);
   const [imgModel, setImgModel] = useState('gemini-2.5-flash-image');
   const [imgAspectRatio, setImgAspectRatio] = useState('16:9');
   const [customImgPrompt, setCustomImgPrompt] = useState('');
@@ -120,6 +204,25 @@ const App: React.FC = () => {
       }
     }
   }, [state.seoData]);
+
+  useEffect(() => {
+    if (state.currentBatch === 0 && suggestions.length === 0) {
+      loadMoreSuggestions();
+    }
+  }, [state.language]);
+
+  const loadMoreSuggestions = async () => {
+    if (isGeneratingSuggestions) return;
+    setIsGeneratingSuggestions(true);
+    try {
+      const newSuggestions = await generateSuggestions(5, suggestions, state.language);
+      setSuggestions(prev => [...prev, ...newSuggestions]);
+    } catch (err: any) {
+      console.error("Error loading suggestions:", err);
+    } finally {
+      setIsGeneratingSuggestions(false);
+    }
+  };
 
   const startProduction = async (title: string) => {
     const total = Math.max(1, Math.min(100, inputTotal));
@@ -277,19 +380,20 @@ Thumbnail Text Suggestions: ${state.seoData.thumbnailTextSuggestions.join(', ')}
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center max-w-6xl mx-auto">
       <header className="w-full mb-8 text-center no-print relative">
         <div className="flex justify-end mb-4">
-          <div className="inline-flex glass-effect p-1 rounded-full gap-1">
-            <button 
-              onClick={() => setLanguage('en')} 
-              className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${state.language === 'en' ? 'beamng-bg-orange text-white' : 'text-gray-400 hover:text-white'}`}
+          <div className="relative inline-block glass-effect rounded-lg">
+            <select 
+              onChange={(e) => setLanguage(e.target.value as Language)} 
+              value={state.language}
+              className="bg-transparent text-gray-300 text-xs font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none appearance-none cursor-pointer hover:text-white transition-colors"
             >
-              ENG
-            </button>
-            <button 
-              onClick={() => setLanguage('vi')} 
-              className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all ${state.language === 'vi' ? 'beamng-bg-orange text-white' : 'text-gray-400 hover:text-white'}`}
-            >
-              VN
-            </button>
+              <option value="en" className="bg-black text-white">ENGLISH</option>
+              <option value="vi" className="bg-black text-white">TIẾNG VIỆT</option>
+              <option value="ko" className="bg-black text-white">한국어</option>
+              <option value="es" className="bg-black text-white">ESPAÑOL</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 7.293 8.172 5.858 9.615z"/></svg>
+            </div>
           </div>
         </div>
         <h1 className="font-heading text-4xl md:text-5xl font-bold beamng-orange mb-2 uppercase tracking-tighter">
@@ -316,6 +420,43 @@ Thumbnail Text Suggestions: ${state.seoData.thumbnailTextSuggestions.join(', ')}
           <button onClick={handleStart} disabled={!inputTitle.trim() || state.isGenerating} className="w-full beamng-bg-orange hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(255,102,0,0.3)] uppercase font-heading">
             {state.isGenerating ? t.director_loading : t.start_btn}
           </button>
+
+          <div className="mt-8 space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t.recommended_themes}</h3>
+              {isGeneratingSuggestions && (
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-[10px] text-gray-400 animate-pulse">{t.loading_suggestions}</span>
+                </div>
+              )}
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              {suggestions.map((theme, i) => (
+                <button
+                  key={i}
+                  disabled={state.isGenerating}
+                  onClick={() => {
+                    setInputTitle(theme);
+                  }}
+                  className={`group flex items-start gap-4 p-3 border rounded-xl transition-all text-left bg-black/40 ${inputTitle === theme ? 'border-orange-500 bg-orange-500/5' : 'border-white/5 hover:border-orange-500/30'}`}
+                >
+                  <span className={`w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full font-bold text-[10px] transition-all ${inputTitle === theme ? 'bg-orange-500 text-white' : 'bg-blue-500/10 text-blue-400 group-hover:bg-orange-500 group-hover:text-white'}`}>
+                    {i + 1}
+                  </span>
+                  <span className={`text-xs ${inputTitle === theme ? 'text-white' : 'text-gray-300'} transition-colors`}>{theme}</span>
+                </button>
+              ))}
+            </div>
+            <button 
+              onClick={loadMoreSuggestions} 
+              disabled={isGeneratingSuggestions || state.isGenerating}
+              className="w-full py-2 border border-gray-700 rounded-lg text-[10px] font-bold text-gray-500 hover:text-white hover:border-gray-500 transition-all uppercase tracking-widest disabled:opacity-50"
+            >
+              {isGeneratingSuggestions ? '...' : t.load_more_suggestions}
+            </button>
+          </div>
+
           {state.error && (
             <div className={`mt-6 p-4 rounded-lg text-sm border ${isQuotaError ? 'bg-orange-500/10 border-orange-500/50 text-orange-400' : 'bg-red-500/10 border-red-500/50 text-red-400'}`}>
               {isQuotaError ? (

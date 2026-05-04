@@ -4,6 +4,15 @@ import { Scene, SeoData, Language } from "../types";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
+const getLanguageName = (lang: Language) => {
+  switch (lang) {
+    case 'vi': return 'Vietnamese';
+    case 'ko': return 'Korean';
+    case 'es': return 'Spanish';
+    default: return 'English';
+  }
+};
+
 const getSystemInstruction = (lang: Language) => `You are a world-class Virtual Action Movie Director and Veo 3 Prompt Engineer. 
 Your specialty is the "BeamNG.Drive" style (Jota Drive channel) characterized by:
 - Soft-body physics (metal crumpling, parts flying off).
@@ -14,7 +23,7 @@ Your specialty is the "BeamNG.Drive" style (Jota Drive channel) characterized by
 When generating scenes, ensure the car model, color, and damage state are consistent and progressive. 
 The car starts in good (or "falsely premium") condition and ends as a total wreck.
 
-IMPORTANT: You must respond entirely in ${lang === 'vi' ? 'Vietnamese' : 'English'}, except for the technical parts of the Veo 3 prompt which should remain in English to ensure compatibility with the video generation tool.
+IMPORTANT: You must respond entirely in ${getLanguageName(lang)}, except for the technical parts of the Veo 3 prompt which should remain in English to ensure compatibility with the video generation tool.
 
 Structure each scene as:
 SCENE [X]: Prompt: [Subject] + [Action/Physics] + [Environment/Context] + [Camera Style/Lighting] 
@@ -67,8 +76,8 @@ Format required for EACH scene in JSON:
 {
   "id": number,
   "prompt": "Full Veo 3 prompt string (IN ENGLISH)",
-  "soundVoice": "Sound and voice guidance (IN ${lang === 'vi' ? 'VIETNAMESE' : 'ENGLISH'})",
-  "physicsDetail": "Short description of vehicle condition (IN ${lang === 'vi' ? 'VIETNAMESE' : 'ENGLISH'})"
+  "soundVoice": "Sound and voice guidance (IN ${getLanguageName(lang).toUpperCase()})",
+  "physicsDetail": "Short description of vehicle condition (IN ${getLanguageName(lang).toUpperCase()})"
 }`;
 
   return withRetry(async () => {
@@ -103,9 +112,25 @@ Format required for EACH scene in JSON:
     }
   }).catch(err => {
     const isQuota = JSON.stringify(err).includes('429');
+    const localizedQuotaError = () => {
+      switch(lang) {
+        case 'vi': return "QUOTA_EXHAUSTED: Bạn đã hết lượt sử dụng miễn phí (Rate Limit). Vui lòng đợi 1 phút hoặc nâng cấp API key.";
+        case 'ko': return "QUOTA_EXHAUSTED: 사용 할당량을 초과했습니다 (요율 제한). 1분 정도 기다리거나 API 키를 업그레이드하세요.";
+        case 'es': return "QUOTA_EXHAUSTED: Ha excedido su cuota actual (Límite de Velocidad). Espere un minuto o actualice su clave API.";
+        default: return "QUOTA_EXHAUSTED: You exceeded your current quota (Rate Limit). Please wait a minute or upgrade your API key.";
+      }
+    };
+    const localizedServerError = () => {
+      switch(lang) {
+        case 'vi': return "Lỗi máy chủ: ";
+        case 'ko': return "서버 오류: ";
+        case 'es': return "Error del servidor: ";
+        default: return "Server error: ";
+      }
+    };
     throw new Error(isQuota 
-      ? (lang === 'vi' ? "QUOTA_EXHAUSTED: Bạn đã hết lượt sử dụng miễn phí (Rate Limit). Vui lòng đợi 1 phút hoặc nâng cấp API key." : "QUOTA_EXHAUSTED: You exceeded your current quota (Rate Limit). Please wait a minute or upgrade your API key.")
-      : (lang === 'vi' ? "Lỗi máy chủ: " + err.message : "Server error: " + err.message)
+      ? localizedQuotaError()
+      : localizedServerError() + err.message
     );
   });
 }
@@ -124,10 +149,10 @@ Requirements:
 3. 3 Hashtags: Relevant to gaming/physics/chaos.
 4. 5 Keywords: Separated by commas.
 5. Thumbnail Prompt: Under 500 characters. Choose the most intense climax scene. Describe it for an image generator (IN ENGLISH).
-6. Thumbnail Text Suggestions: Provide 4 short, bold, viral words or phrases (e.g., "THẤT BẠI!", "ĐIÊN RỒ", "TẠI SAO?", "HỎNG HẾT RỒI") that should appear on the thumbnail.
+6. Thumbnail Text Suggestions: Provide 4 short, bold, viral words or phrases (e.g., "THẤT BẠI!", "ĐIÊN RỒ", "TẠI SAO?", "HỎNG HẾT RỒI" for Vietnamese or "FAILED!", "INSANE", "WHY?", "CRASHED" for English) that should appear on the thumbnail.
 7. Next Theme Suggestions: Suggest 5 creative, ironic topics for the next video.
 
-All text except the Thumbnail Prompt must be in ${lang === 'vi' ? 'Vietnamese' : 'English'}.`;
+All text except the Thumbnail Prompt must be in ${getLanguageName(lang)}.`;
 
   return withRetry(async () => {
     try {
@@ -169,10 +194,57 @@ All text except the Thumbnail Prompt must be in ${lang === 'vi' ? 'Vietnamese' :
     }
   }).catch(err => {
     const isQuota = JSON.stringify(err).includes('429');
+    const localizedQuotaError = () => {
+      switch(lang) {
+        case 'vi': return "QUOTA_EXHAUSTED: Hết lượt sử dụng SEO. Vui lòng thử lại sau.";
+        case 'ko': return "QUOTA_EXHAUSTED: SEO 할당량이 초과되었습니다. 나중에 다시 시도하세요.";
+        case 'es': return "QUOTA_EXHAUSTED: Cuota de SEO excedida. Inténtelo más tarde.";
+        default: return "QUOTA_EXHAUSTED: SEO quota exceeded. Please try again later.";
+      }
+    };
+    const localizedSeoError = () => {
+      switch(lang) {
+        case 'vi': return "Lỗi SEO: ";
+        case 'ko': return "SEO 오류: ";
+        case 'es': return "Error de SEO: ";
+        default: return "SEO error: ";
+      }
+    };
     throw new Error(isQuota 
-      ? (lang === 'vi' ? "QUOTA_EXHAUSTED: Hết lượt sử dụng SEO. Vui lòng thử lại sau." : "QUOTA_EXHAUSTED: SEO quota exceeded. Please try again later.")
-      : (lang === 'vi' ? "Lỗi SEO: " + err.message : "SEO error: " + err.message)
+      ? localizedQuotaError()
+      : localizedSeoError() + err.message
     );
+  });
+}
+
+export async function generateSuggestions(count: number, currentSuggestions: string[], lang: Language): Promise<string[]> {
+  const prompt = `Generate ${count} catchy, viral, mechanical-failure-focused BeamNG.Drive style video themes. 
+  Themes should be ironic, intense, or chaotic (e.g., "The brake pedal that decided to quit", "Police chase with a loose engine block").
+  
+  Already suggested: ${currentSuggestions.join(', ')}
+  
+  Format: JSON array of strings.
+  Language: ${getLanguageName(lang)}.`;
+
+  return withRetry(async () => {
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          }
+        }
+      });
+
+      return JSON.parse(response.text) as string[];
+    } catch (error: any) {
+      console.error("Gemini suggestions error:", error);
+      throw error;
+    }
   });
 }
 

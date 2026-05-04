@@ -16,7 +16,7 @@ export interface SeoData {
   nextThemeSuggestions: string[];
 }
 
-export type Language = 'en' | 'vi';
+export type Language = 'en' | 'vi' | 'ko' | 'es';
 
 export interface ScriptState {
   title: string;
